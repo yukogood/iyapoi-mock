@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イヤポイ | 心のゴミ捨て場</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes throwAway {
+            0% { transform: scale(1) translateY(0); opacity: 1; }
+            50% { transform: scale(0.5) translateY(-100px); opacity: 0.5; }
+            100% { transform: scale(0) translateY(200px); opacity: 0; }
+        }
+        .animate-throw { animation: throwAway 0.8s forwards ease-in-out; }
+        .hidden { display: none; }
+        .bg-pastel { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
+    </style>
+</head>
+<body class="bg-pastel min-h-screen font-sans text-gray-700 flex flex-col items-center justify-center p-4">
+
+    <div id="screen-home" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
+        <div class="mb-6 text-sm text-gray-400">Current Mood Score</div>
+        <div class="text-6xl font-bold text-blue-400 mb-4">6.4</div>
+        <p class="mb-8">モヤモヤ、溜まってませんか？</p>
+        <button onclick="navTo('screen-input')" class="w-full bg-blue-400 text-white py-4 rounded-full font-bold shadow-lg hover:bg-blue-500 transition">
+            ゴミ出しをする
+        </button>
+    </div>
+
+    <div id="screen-input" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 hidden">
+        <h2 class="text-xl font-bold mb-6">今の気持ちを吐き出す</h2>
+        
+        <label class="block mb-2 text-sm font-medium">感情タグ</label>
+        <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">イライラ</span>
+            <span class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">悲しい</span>
+            <span class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">不安</span>
+        </div>
+
+        <label class="block mb-2 text-sm font-medium">出来事を書く</label>
+        <textarea id="trash-text" class="w-full border rounded-2xl p-4 mb-6 h-32 outline-none focus:ring-2 focus:ring-blue-200" placeholder="何があった？"></textarea>
+
+        <label class="block mb-2 text-sm font-medium">不快度 (0-10)</label>
+        <input type="range" class="w-full mb-8 cursor-pointer">
+
+        <button onclick="startRitual()" class="w-full bg-gray-800 text-white py-4 rounded-full font-bold shadow-lg">
+            捨てる
+        </button>
+    </div>
+
+    <div id="screen-ritual" class="w-full max-w-md text-center hidden">
+        <div id="trash-item" class="bg-white p-8 rounded-2xl shadow-md text-gray-400 italic mb-12">
+            </div>
+        <div class="text-6xl">🗑️</div>
+    </div>
+
+    <div id="screen-result" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center hidden">
+        <div class="text-5xl mb-6">✨</div>
+        <h2 class="text-2xl font-bold mb-4">ポイしました！</h2>
+        <p class="text-gray-500 mb-8 italic">「それは嫌で当然のことです。<br>明日まで持ち越さなくて大丈夫。」</p>
+        <button onclick="navTo('screen-home')" class="w-full border-2 border-blue-400 text-blue-400 py-4 rounded-full font-bold">
+            ホームに戻る
+        </button>
+    </div>
+
+    <script>
+        function navTo(screenId) {
+            // 全ての画面を隠す
+            document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+            // 指定した画面だけ表示
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function startRitual() {
+            const text = document.getElementById('trash-text').value;
+            if(!text) return alert('何か書いてみて！');
+
+            const item = document.getElementById('trash-item');
+            item.innerText = text;
+            
+            navTo('screen-ritual');
+
+            // 0.5秒後にアニメーション開始
+            setTimeout(() => {
+                item.classList.add('animate-throw');
+            }, 500);
+
+            // アニメーション終了後にリザルト画面へ
+            setTimeout(() => {
+                item.classList.remove('animate-throw');
+                navTo('screen-result');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
