@@ -5,33 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>イヤポイ | 心のゴミ捨て場</title>
     <style>
-        /* --- ここから追加 --- */
-        /* 宇宙へ放つアニメーション：縮小しながら上に消える */
-        @keyframes throwToSpace {
-            0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: scale(0) translateY(-600px) rotate(180deg); opacity: 0; }
-        }
-        .animate-space-throw { animation: throwToSpace 1.5s forwards ease-in; }
+    <style>
+    /* 宇宙へ放つアニメーション */
+    @keyframes throwToSpace {
+        0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: scale(0) translateY(-600px) rotate(180deg); opacity: 0; }
+    }
+    .animate-space-throw { animation: throwToSpace 1.5s forwards ease-in; }
 
-        /* 宇宙の背景：黒ベースのグラデーション */
-        .bg-space {
-            background: radial-gradient(circle, #2a2a2a 0%, #000000 100%) !important;
-        }
-        /* --- ここまで追加 --- */
-        @keyframes throwAway {
-            0% { transform: scale(1) translateY(0); opacity: 1; }
-            50% { transform: scale(0.5) translateY(-100px); opacity: 0.5; }
-            100% { transform: scale(0) translateY(200px); opacity: 0; }
-        }
-        .animate-throw { animation: throwAway 0.8s forwards ease-in-out; }
-        .hidden { display: none; }
-        .bg-pastel { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
-                /* 選択された時のスタイル */
-                span.tag-selected {
-                                background-color: #60a5fa !important; /* 青色にする */
-                                color: white !important;
-                                border-color: #60a5fa !important;
-                }
+    /* 背景：宇宙色 */
+    .bg-space {
+        background: radial-gradient(circle, #1a1a2e 0%, #000000 100%) !important;
+    }
+    
+    .bg-pastel { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
+    .hidden { display: none; }
+
+    /* 感情タグが選択された時の色 */
+    .tag-selected {
+        background-color: #60a5fa !important;
+        color: white !important;
+        border-color: #60a5fa !important;
+    }
+
+    /* 星空のデザイン */
+    .stars {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 10; /* 背景より上で、コンテンツより下 */
+        pointer-events: none;
+        background-image: 
+            radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+            radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+            radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+            radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    .stars-active { opacity: 1; }
+</style>  
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
     
