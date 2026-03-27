@@ -4,210 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>イヤポイ | 心のゴミ捨て場</title>
-    <style>
-    <style>
-    /* 宇宙へ放つアニメーション */
-    @keyframes throwToSpace {
-        0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
-        100% { transform: scale(0) translateY(-600px) rotate(180deg); opacity: 0; }
-    }
-    .animate-space-throw { animation: throwToSpace 1.5s forwards ease-in; }
-
-    /* 背景：宇宙色 */
-    .bg-space {
-        background: radial-gradient(circle, #1a1a2e 0%, #000000 100%) !important;
-    }
-    
-    .bg-pastel { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
-    .hidden { display: none; }
-
-    /* 感情タグが選択された時の色 */
-    .tag-selected {
-        background-color: #60a5fa !important;
-        color: white !important;
-        border-color: #60a5fa !important;
-    }
-
-    /* 星空のデザイン */
-    .stars {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 10; /* 背景より上で、コンテンツより下 */
-        pointer-events: none;
-        background-image: 
-            radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-            radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-            radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
-            radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
-        background-repeat: repeat;
-        background-size: 200px 200px;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-    .stars-active { opacity: 1; }
-</style>  
-    </style>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <style>
+        /* 1. 宇宙へ放つアニメーション */
+        @keyframes throwToSpace {
+            0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(0) translateY(-1000px) rotate(360deg); opacity: 0; }
+        }
+        .animate-space-throw { animation: throwToSpace 1.5s forwards ease-in; }
+
+        /* 2. 背景設定 */
+        body { transition: background 0.5s ease; }
+        .bg-pastel { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
+        .bg-space { background: radial-gradient(circle, #1a1a2e 0%, #000000 100%) !important; }
+
+        /* 3. 星空のデザイン */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .stars-active { opacity: 1; }
+
+        /* 4. 感情タグが選択された時の色 */
+        .tag-selected {
+            background-color: #60a5fa !important;
+            color: white !important;
+            border-color: #60a5fa !important;
+        }
+
+        .hidden { display: none; }
+        .screen { z-index: 10; position: relative; }
+    </style>
 </head>
-<body class="bg-pastel min-h-screen font-sans text-gray-700 flex flex-col items-center justify-center p-4">
-<body class="bg-pastel min-h-screen ...">
+<body class="bg-pastel min-h-screen font-sans text-gray-700 flex flex-col items-center justify-center p-4 overflow-hidden">
+
     <div id="star-layer" class="stars"></div>
 
-
-<script>
-    // 画面を切り替える関数
-    function navTo(screenId) {
-        document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
-        document.getElementById(screenId).classList.remove('hidden');
-
-        const starLayer = document.getElementById('star-layer');
-
-        // 宇宙の画面（儀式・結果）のときは背景を黒くして星を出す
-        if (screenId === 'screen-ritual' || screenId === 'screen-result') {
-            document.body.classList.remove('bg-pastel');
-            document.body.classList.add('bg-space');
-            starLayer.classList.add('stars-active');
-        } else {
-            document.body.classList.remove('bg-space');
-            document.body.classList.add('bg-pastel');
-            starLayer.classList.remove('stars-active');
-        }
-    }
-
-    // タグの選択状態を切り替える
-    function toggleTag(el) {
-        el.classList.toggle('tag-selected');
-    }
-
-    // 宇宙へ投げる「儀式」を開始する
-    function startRitual() {
-        const text = document.getElementById('trash-text').value;
-        const selectedTags = Array.from(document.querySelectorAll('.tag-selected'))
-                                .map(el => el.innerText);
-
-        if(!text && selectedTags.length === 0) return alert('感情を選んだり、何か書いてみて！');
-
-        const item = document.getElementById('trash-item');
-        const tagsDisplay = selectedTags.length > 0 ? `【${selectedTags.join(', ')}】\n` : "";
-        item.innerText = tagsDisplay + text;
-        
-        navTo('screen-ritual');
-
-        setTimeout(() => {
-            item.classList.add('animate-space-throw');
-        }, 200);
-
-        setTimeout(() => {
-            item.classList.remove('animate-space-throw');
-            navTo('screen-result');
-            // 次のために文字を消す
-            document.getElementById('trash-text').value = '';
-            document.querySelectorAll('.tag-selected').forEach(el => el.classList.remove('tag-selected'));
-        }, 2000);
-    }
-</script>
-    <div id="screen-home" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
+    <div id="screen-home" class="screen w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
         <div class="mb-6 text-sm text-gray-400">スカッとする！</div>
-        <div class="text-6xl font-bold text-blue-400 mb-4">トラッシュ</div>
-        <p class="mb-8">モヤモヤ、溜まってませんか？</p>
+        <div class="text-6xl font-bold text-blue-400 mb-4 tracking-tighter">トラッシュ</div>
+        <p class="mb-8 text-gray-500 text-sm">モヤモヤ、溜まってませんか？</p>
         <button onclick="navTo('screen-input')" class="w-full bg-blue-400 text-white py-4 rounded-full font-bold shadow-lg hover:bg-blue-500 transition">
             宇宙に投げよう
         </button>
     </div>
 
-    <div id="screen-input" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 hidden">
-        <h2 class="text-xl font-bold mb-6">今の気持ちを吐き出す</h2>
+    <div id="screen-input" class="screen w-full max-w-md bg-white rounded-3xl shadow-xl p-8 hidden overflow-y-auto max-h-[90vh]">
+        <h2 class="text-xl font-bold mb-6 text-center">今の気持ちを吐き出す</h2>
         
-        <label class="block mb-2 text-sm font-medium">感情タグ</label>
+        <label class="block mb-2 text-sm font-medium">感情タグ（複数選択可）</label>
         <div class="flex flex-wrap gap-2 mb-6">
-            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">イライラ</span>
-            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">悲しい</span>
-            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">不安</span>
-            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">悔しい</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">寂しい</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">むかつく</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">疲れた</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">落ち込む</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">焦り</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">恥ずかしい</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">ショック</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">モヤモヤ</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">がっかり</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">嫌悪感</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">孤独</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">不満</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">不快</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">怖い</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">心配</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">自己嫌悪</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">プレッシャー</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">混乱</span>
-<span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-sm cursor-pointer hover:bg-blue-50">無力感</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">イライラ</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">悲しい</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">不安</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">悔しい</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">寂しい</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">むかつく</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">疲れた</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">落ち込む</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">焦り</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">恥ずかしい</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">ショック</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">モヤモヤ</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">がっかり</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">嫌悪感</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">孤独</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">不満</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">不快</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">怖い</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">心配</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">自己嫌悪</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">プレッシャー</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">混乱</span>
+            <span onclick="toggleTag(this)" class="px-4 py-2 border rounded-full text-xs cursor-pointer hover:bg-blue-50 transition-colors">無力感</span>
         </div>
 
         <label class="block mb-2 text-sm font-medium">出来事を書く</label>
         <textarea id="trash-text" class="w-full border rounded-2xl p-4 mb-6 h-32 outline-none focus:ring-2 focus:ring-blue-200" placeholder="何があった？"></textarea>
 
-        <label class="block mb-2 text-sm font-medium">不快度 (0-10)</label>
-        <input type="range" class="w-full mb-8 cursor-pointer">
+        <button onclick="startRitual()" class="w-full bg-gray-800 text-white py-4 rounded-full font-bold shadow-lg hover:opacity-90 transition">
+            宇宙へ捨てる
+        </button>
+    </div>
 
-        <button onclick="startRitual()" class="w-full bg-gray-800 text-white py-4 rounded-full font-bold shadow-lg">
-            捨てる
-        </button>
-    </div>
-            <div id="screen-ritual" class="fixed inset-0 flex flex-col items-center justify-center hidden p-4 z-50" style="background: radial-gradient(circle, #1a1a2e 0%, #000000 100%)">
-        <div id="trash-item" class="bg-gray-100 p-8 rounded-2xl shadow-lg text-gray-800 italic mb-12">
+    <div id="screen-ritual" class="screen fixed inset-0 flex flex-col items-center justify-center hidden p-4">
+        <div id="trash-item" class="bg-white p-8 rounded-2xl shadow-2xl text-gray-800 italic text-xl max-w-xs text-center break-words">
             </div>
-        <div class="h-20"></div> 
     </div>
-    <div id="screen-result" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center hidden">
+
+    <div id="screen-result" class="screen w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center hidden">
         <div class="text-5xl mb-6">✨</div>
-        <h2 class="text-2xl font-bold mb-4">宇宙にポイしました！</h2>
+        <h2 class="text-2xl font-bold mb-4">ポイしました！</h2>
         <p class="text-gray-500 mb-8 italic">「それは嫌で当然のことです。<br>明日まで持ち越さなくて大丈夫。」</p>
-        <button onclick="navTo('screen-home')" class="w-full border-2 border-blue-400 text-blue-400 py-4 rounded-full font-bold">
+        <button onclick="resetApp()" class="w-full border-2 border-blue-400 text-blue-400 py-4 rounded-full font-bold hover:bg-blue-50 transition">
             ホームに戻る
-        </button>
-         <button onclick="navTo('screen-home')" class="w-full border-2 border-blue-400 text-blue-400 py-4 rounded-full font-bold">
-            宇宙に捨てられたゴミ達を見る（準備中）
         </button>
     </div>
 
     <script>
-        // タグの選択・解除を切り替える
-                function toggleTag(el) {
-                                el.classList.toggle('tag-selected');
-                }
-        
-                function navTo(screenId) {
-            // 全ての画面を隠す
-            document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
-            // 指定した画面だけ表示
+        // 1. 画面遷移と背景の切り替え
+        function navTo(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
             document.getElementById(screenId).classList.remove('hidden');
+
+            const starLayer = document.getElementById('star-layer');
+
+            if (screenId === 'screen-ritual' || screenId === 'screen-result') {
+                document.body.className = 'bg-space min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden';
+                starLayer.classList.add('stars-active');
+            } else {
+                document.body.className = 'bg-pastel min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden text-gray-700';
+                starLayer.classList.remove('stars-active');
+            }
         }
 
+        // 2. タグの選択切り替え
+        function toggleTag(el) {
+            el.classList.toggle('tag-selected');
+        }
+
+        // 3. 捨てる儀式の実行
         function startRitual() {
             const text = document.getElementById('trash-text').value;
-            if(!text) return alert('何か書いてみて！');
+            const selectedTags = Array.from(document.querySelectorAll('.tag-selected'))
+                                    .map(el => el.innerText);
+
+            if(!text && selectedTags.length === 0) return alert('気持ちを書いてくださいね！');
 
             const item = document.getElementById('trash-item');
-            item.innerText = text;
+            const tagsDisplay = selectedTags.length > 0 ? `【${selectedTags.join(', ')}】\n` : "";
+            item.innerText = tagsDisplay + text;
             
             navTo('screen-ritual');
 
-            // 0.2秒後にアニメーション開始
             setTimeout(() => {
-                // ↓ アニメーションクラス名を修正
                 item.classList.add('animate-space-throw');
-            }, 200);
+            }, 300);
 
-            // アニメーション終了後にリザルト画面へ（少し時間を伸ばす 1.5秒 + α）
             setTimeout(() => {
-                // ↓ アニメーションクラス名を修正
                 item.classList.remove('animate-space-throw');
                 navTo('screen-result');
-            }, 2000);
+            }, 2300);
         }
-        </script>
+
+        // 4. アプリのリセット
+        function resetApp() {
+            document.getElementById('trash-text').value = '';
+            document.querySelectorAll('.tag-selected').forEach(el => el.classList.remove('tag-selected'));
+            navTo('screen-home');
+        }
+    </script>
 </body>
 </html>
