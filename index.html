@@ -101,7 +101,12 @@
     </div>
 
     <script>
-        function navTo(screenId) {
+        // タグの選択・解除を切り替える
+                function toggleTag(el) {
+                                el.classList.toggle('tag-selected');
+                }
+        
+                function navTo(screenId) {
             // 全ての画面を隠す
             document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
             // 指定した画面だけ表示
