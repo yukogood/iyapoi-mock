@@ -37,7 +37,67 @@
     
 </head>
 <body class="bg-pastel min-h-screen font-sans text-gray-700 flex flex-col items-center justify-center p-4">
+<body class="bg-pastel min-h-screen ...">
+    <div id="star-layer" class="stars"></div>
 
+    ```
+
+### 3. JavaScriptの修正（`<script>` の中をこれに差し替え）
+画面切り替え（`navTo`）、タグの選択（`toggleTag`）、宇宙へ投げる処理（`startRitual`）を最新版にまとめました。
+
+```javascript
+<script>
+    // 画面を切り替える関数
+    function navTo(screenId) {
+        document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById(screenId).classList.remove('hidden');
+
+        const starLayer = document.getElementById('star-layer');
+
+        // 宇宙の画面（儀式・結果）のときは背景を黒くして星を出す
+        if (screenId === 'screen-ritual' || screenId === 'screen-result') {
+            document.body.classList.remove('bg-pastel');
+            document.body.classList.add('bg-space');
+            starLayer.classList.add('stars-active');
+        } else {
+            document.body.classList.remove('bg-space');
+            document.body.classList.add('bg-pastel');
+            starLayer.classList.remove('stars-active');
+        }
+    }
+
+    // タグの選択状態を切り替える
+    function toggleTag(el) {
+        el.classList.toggle('tag-selected');
+    }
+
+    // 宇宙へ投げる「儀式」を開始する
+    function startRitual() {
+        const text = document.getElementById('trash-text').value;
+        const selectedTags = Array.from(document.querySelectorAll('.tag-selected'))
+                                .map(el => el.innerText);
+
+        if(!text && selectedTags.length === 0) return alert('感情を選んだり、何か書いてみて！');
+
+        const item = document.getElementById('trash-item');
+        const tagsDisplay = selectedTags.length > 0 ? `【${selectedTags.join(', ')}】\n` : "";
+        item.innerText = tagsDisplay + text;
+        
+        navTo('screen-ritual');
+
+        setTimeout(() => {
+            item.classList.add('animate-space-throw');
+        }, 200);
+
+        setTimeout(() => {
+            item.classList.remove('animate-space-throw');
+            navTo('screen-result');
+            // 次のために文字を消す
+            document.getElementById('trash-text').value = '';
+            document.querySelectorAll('.tag-selected').forEach(el => el.classList.remove('tag-selected'));
+        }, 2000);
+    }
+</script>
     <div id="screen-home" class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
         <div class="mb-6 text-sm text-gray-400">スカッとする！いやポイ</div>
         <div class="text-6xl font-bold text-blue-400 mb-4">スカッシュ</div>
