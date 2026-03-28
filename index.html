@@ -51,7 +51,7 @@
     }
 
     .animate-warp {
-      animation: warpToDeepSpace 2.8s forwards cubic-bezier(0.4, 0, 0.6, 1);
+      animation: warpToDeepSpace 8s forwards cubic-bezier(0.3, 0, 0.5, 1);
     }
 
     /* 2. 背景設定 */
@@ -250,12 +250,12 @@
 
       setTimeout(() => {
         item.classList.add('animate-warp');
-      }, 400);
+      }, 600);
 
       setTimeout(() => {
         item.classList.remove('animate-warp');
         navTo('screen-result');
-      }, 3200);
+      }, 9000);
     }
 
     function resetApp() {
