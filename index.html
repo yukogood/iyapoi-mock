@@ -6,46 +6,48 @@
   <title>イヤポイ | 宇宙へポイ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* 1. 星の粒に分解されて宇宙に飛んでいくアニメーション */
-    @keyframes starParticle {
-      0% {
-        transform: translate(0, 0) scale(1) rotate(0deg);
-        opacity: 1;
-        filter: brightness(1.5);
-      }
-      20% {
-        opacity: 1;
-        filter: brightness(2.5) blur(0px);
-      }
-      60% {
-        opacity: 0.6;
-        filter: brightness(3) blur(1px);
-      }
-      100% {
-        transform: translate(var(--tx), var(--ty)) scale(0) rotate(var(--tr));
-        opacity: 0;
-        filter: brightness(5) blur(3px);
-      }
+    /* 1. 文字を宇宙へ放り投げる 3段階アニメーション */
+
+    /* 段階1: 中央に大きく出現 */
+    @keyframes charAppear {
+      0%   { opacity: 0; transform: scale(2) translateY(30px); filter: blur(4px) brightness(2); }
+      100% { opacity: 1; transform: scale(1) translateY(0px);  filter: blur(0px) brightness(1.2); }
     }
 
-    @keyframes charFadeOut {
-      0%   { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
-      30%  { opacity: 1; transform: scale(1.1); filter: blur(0px) brightness(1.5); }
-      70%  { opacity: 0.3; transform: scale(0.5); filter: blur(2px) brightness(3); }
-      100% { opacity: 0; transform: scale(0); filter: blur(6px) brightness(5); }
+    /* 段階2: 左右ジグザグしながら上へ縮小 */
+    @keyframes charZigzag {
+      0%   { transform: translateX(0px)           translateY(0px)    scale(1)    rotate(0deg);   opacity: 1;   filter: brightness(1.2); }
+      15%  { transform: translateX(var(--zx1))    translateY(-15%)   scale(0.95) rotate(var(--rz1)); opacity: 1; }
+      30%  { transform: translateX(var(--zx2))    translateY(-32%)   scale(0.88) rotate(var(--rz2)); opacity: 0.95; }
+      45%  { transform: translateX(var(--zx3))    translateY(-52%)   scale(0.78) rotate(var(--rz3)); opacity: 0.88; }
+      60%  { transform: translateX(var(--zx4))    translateY(-68%)   scale(0.65) rotate(var(--rz4)); opacity: 0.75; filter: brightness(1.8); }
+      75%  { transform: translateX(var(--zx5))    translateY(-82%)   scale(0.45) rotate(var(--rz5)); opacity: 0.55; filter: brightness(2.5) blur(1px); }
+      88%  { transform: translateX(var(--zx6))    translateY(-93%)   scale(0.22) rotate(var(--rz6)); opacity: 0.3;  filter: brightness(4) blur(3px); }
+      100% { transform: translateX(var(--zxEnd))  translateY(-110%)  scale(0)    rotate(var(--rzEnd)); opacity: 0; filter: brightness(6) blur(8px); }
+    }
+
+    /* 段階3: 星として飛び散る */
+    @keyframes starScatter {
+      0%   { transform: translate(0, 0) scale(1.2) rotate(0deg); opacity: 1;   filter: brightness(3); }
+      30%  { opacity: 0.9; filter: brightness(4) blur(0px); }
+      70%  { opacity: 0.5; filter: brightness(3) blur(2px); }
+      100% { transform: translate(var(--sx), var(--sy)) scale(0) rotate(var(--sr)); opacity: 0; filter: brightness(6) blur(4px); }
     }
 
     .char-span {
       display: inline-block;
       position: relative;
+      animation: charAppear 0.4s var(--appear-delay) both ease-out;
+    }
+    .char-span.phase-zigzag {
+      animation: charZigzag var(--zigzag-dur) forwards cubic-bezier(0.4, 0, 0.7, 1);
     }
 
     .star-particle {
       position: fixed;
       pointer-events: none;
-      font-size: 14px;
       z-index: 100;
-      animation: starParticle var(--dur) forwards ease-out;
+      animation: starScatter var(--dur) forwards ease-out;
     }
 
     /* 2. 背景設定 */
@@ -294,81 +296,101 @@
       el.classList.toggle('tag-selected');
     }
 
+    const STAR_EMOJIS = ['⭐','✨','💫','🌟','⚡','🌠','·','°','★','☆'];
+
     function startRitual() {
       const text = document.getElementById('trash-text').value;
-      if(!text.trim()) return alert('内容を書いてくださいね。');
+      if (!text.trim()) return alert('内容を書いてくださいね。');
 
       const item = document.getElementById('trash-item');
+      const chars = [...text];
+      const total = chars.length;
 
-      // 文字を一字ずつ span に分解
-      item.innerHTML = [...text].map(ch =>
-        `<span class="char-span">${ch === ' ' ? '&nbsp;' : ch}</span>`
-      ).join('');
+      // --- 段階1: 文字を span に分解し、出現アニメーション ---
+      item.innerHTML = chars.map((ch, i) => {
+        const appearDelay = i * 60;
+        return `<span class="char-span" style="--appear-delay:${appearDelay}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`;
+      }).join('');
 
       navTo('screen-ritual');
 
-      // 600ms後に星の粒分解アニメーション開始
-      setTimeout(() => {
-        explodeToStars(item);
-      }, 600);
+      // --- 段階2: 600ms後にジグザグ上昇アニメーション開始 ---
+      const zigzagStartDelay = 600;
+      const zigzagDuration = 5500; // ms
 
-      // 9000ms後に結果画面へ
+      setTimeout(() => {
+        const spans = item.querySelectorAll('.char-span');
+        spans.forEach((span, i) => {
+          // 文字ごとに少しずつずらしたジグザグ変数を設定
+          const offset = (i / total - 0.5) * 60; // 文字の位置に応じて少しずれ
+          const sign = i % 2 === 0 ? 1 : -1;
+          const amp = 30 + Math.random() * 50;
+          const rot = 5 + Math.random() * 10;
+
+          span.style.setProperty('--zx1',  `${sign * amp * 0.4 + offset}px`);
+          span.style.setProperty('--zx2',  `${-sign * amp * 0.7 + offset}px`);
+          span.style.setProperty('--zx3',  `${sign * amp * 1.0 + offset}px`);
+          span.style.setProperty('--zx4',  `${-sign * amp * 0.8 + offset}px`);
+          span.style.setProperty('--zx5',  `${sign * amp * 0.5 + offset}px`);
+          span.style.setProperty('--zx6',  `${-sign * amp * 0.3 + offset}px`);
+          span.style.setProperty('--zxEnd',`${(Math.random()-0.5)*80}px`);
+          span.style.setProperty('--rz1',  `${sign * rot * 0.5}deg`);
+          span.style.setProperty('--rz2',  `${-sign * rot}deg`);
+          span.style.setProperty('--rz3',  `${sign * rot * 1.2}deg`);
+          span.style.setProperty('--rz4',  `${-sign * rot * 0.8}deg`);
+          span.style.setProperty('--rz5',  `${sign * rot * 0.4}deg`);
+          span.style.setProperty('--rz6',  `${-sign * rot * 0.2}deg`);
+          span.style.setProperty('--rzEnd',`${(Math.random()-0.5)*60}deg`);
+          span.style.setProperty('--zigzag-dur', `${zigzagDuration}ms`);
+
+          span.classList.add('phase-zigzag');
+        });
+      }, zigzagStartDelay);
+
+      // --- 段階3: ジグザグの終盤に星パーティクルを爆発させる ---
+      const scatterDelay = zigzagStartDelay + zigzagDuration * 0.72;
+
+      setTimeout(() => {
+        const spans = item.querySelectorAll('.char-span');
+        spans.forEach((span, i) => {
+          const rect = span.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+
+          const particleCount = 3 + Math.floor(Math.random() * 4);
+          for (let p = 0; p < particleCount; p++) {
+            const star = document.createElement('div');
+            star.classList.add('star-particle');
+            star.textContent = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
+
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 60 + Math.random() * 250;
+            const sx = Math.cos(angle) * dist;
+            const sy = Math.sin(angle) * dist - Math.random() * 180;
+            const sr = (Math.random() - 0.5) * 540;
+            const dur = (0.8 + Math.random() * 2.5).toFixed(2);
+            const pDelay = i * 30 + Math.random() * 300;
+            const fontSize = 8 + Math.random() * 12;
+
+            star.style.cssText = `
+              left:${cx}px;top:${cy}px;
+              font-size:${fontSize}px;
+              --sx:${sx}px;--sy:${sy}px;--sr:${sr}deg;
+              --dur:${dur}s;
+              animation-delay:${pDelay}ms;
+              opacity:0;
+            `;
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), pDelay + parseFloat(dur) * 1000 + 300);
+          }
+        });
+      }, scatterDelay);
+
+      // --- 完了: 結果画面へ遷移 ---
       setTimeout(() => {
         item.innerHTML = '';
         navTo('screen-result');
-      }, 9000);
-    }
-
-    const STAR_EMOJIS = ['⭐','✨','💫','🌟','⚡','🌠','✦','·','°'];
-
-    function explodeToStars(container) {
-      const spans = container.querySelectorAll('.char-span');
-      const containerRect = container.getBoundingClientRect();
-
-      spans.forEach((span, i) => {
-        const rect = span.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
-        // 文字をフェードアウト（少し遅延させてバラバラ感を出す）
-        const charDelay = i * 80 + Math.random() * 200;
-        span.style.animation = `charFadeOut 1.2s ${charDelay}ms forwards ease-in`;
-
-        // 各文字から星パーティクルを4〜7個生成
-        const particleCount = 4 + Math.floor(Math.random() * 4);
-        for (let p = 0; p < particleCount; p++) {
-          const star = document.createElement('div');
-          star.classList.add('star-particle');
-          star.textContent = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
-
-          // 散らばる方向（ランダム）
-          const angle = Math.random() * Math.PI * 2;
-          const dist = 80 + Math.random() * 300;
-          const tx = Math.cos(angle) * dist;
-          const ty = Math.sin(angle) * dist - Math.random() * 200; // 上方向に偏らせる
-          const tr = (Math.random() - 0.5) * 720;
-          const dur = (1.5 + Math.random() * 4).toFixed(2);
-          const pDelay = charDelay + Math.random() * 400;
-          const fontSize = 8 + Math.random() * 14;
-
-          star.style.cssText = `
-            left: ${cx}px;
-            top: ${cy}px;
-            font-size: ${fontSize}px;
-            --tx: ${tx}px;
-            --ty: ${ty}px;
-            --tr: ${tr}deg;
-            --dur: ${dur}s;
-            animation-delay: ${pDelay}ms;
-            opacity: 0;
-          `;
-
-          document.body.appendChild(star);
-
-          // アニメーション終了後に削除
-          setTimeout(() => star.remove(), pDelay + parseFloat(dur) * 1000 + 200);
-        }
-      });
+      }, zigzagStartDelay + zigzagDuration + 800);
     }
 
     function resetApp() {
