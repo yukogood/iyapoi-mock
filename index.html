@@ -309,87 +309,75 @@
       if (!text.trim()) return alert('内容を書いてくださいね。');
 
       const item = document.getElementById('trash-item');
-      const chars = [...text];
-      const total = chars.length;
 
-      // --- 段階1: 文字を span に分解し、出現アニメーション ---
-      item.innerHTML = chars.map((ch, i) => {
-        const appearDelay = i * 60;
-        return `<span class="char-span" style="--appear-delay:${appearDelay}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`;
-      }).join('');
+      // --- テキスト全体をそのまま表示（分解しない）---
+      item.innerHTML = `<span class="char-span" style="--appear-delay:0ms">${text}</span>`;
 
       navTo('screen-ritual');
 
       // --- 段階2: 600ms後にジグザグ上昇アニメーション開始 ---
       const zigzagStartDelay = 600;
-      const zigzagDuration = 5500; // ms
+      const zigzagDuration = 5500;
 
       setTimeout(() => {
-        const spans = item.querySelectorAll('.char-span');
-        spans.forEach((span, i) => {
-          // 文字ごとに少しずつずらしたジグザグ変数を設定
-          const offset = (i / total - 0.5) * 60; // 文字の位置に応じて少しずれ
-          const sign = i % 2 === 0 ? 1 : -1;
-          const amp = 30 + Math.random() * 50;
-          const rot = 5 + Math.random() * 10;
+        const span = item.querySelector('.char-span');
+        const amp = 40 + Math.random() * 40;
+        const rot = 6 + Math.random() * 8;
 
-          span.style.setProperty('--zx1',  `${sign * amp * 0.4 + offset}px`);
-          span.style.setProperty('--zx2',  `${-sign * amp * 0.7 + offset}px`);
-          span.style.setProperty('--zx3',  `${sign * amp * 1.0 + offset}px`);
-          span.style.setProperty('--zx4',  `${-sign * amp * 0.8 + offset}px`);
-          span.style.setProperty('--zx5',  `${sign * amp * 0.5 + offset}px`);
-          span.style.setProperty('--zx6',  `${-sign * amp * 0.3 + offset}px`);
-          span.style.setProperty('--zxEnd',`${(Math.random()-0.5)*80}px`);
-          span.style.setProperty('--rz1',  `${sign * rot * 0.5}deg`);
-          span.style.setProperty('--rz2',  `${-sign * rot}deg`);
-          span.style.setProperty('--rz3',  `${sign * rot * 1.2}deg`);
-          span.style.setProperty('--rz4',  `${-sign * rot * 0.8}deg`);
-          span.style.setProperty('--rz5',  `${sign * rot * 0.4}deg`);
-          span.style.setProperty('--rz6',  `${-sign * rot * 0.2}deg`);
-          span.style.setProperty('--rzEnd',`${(Math.random()-0.5)*60}deg`);
-          span.style.setProperty('--zigzag-dur', `${zigzagDuration}ms`);
+        span.style.setProperty('--zx1',   `${amp * 0.4}px`);
+        span.style.setProperty('--zx2',   `${-amp * 0.7}px`);
+        span.style.setProperty('--zx3',   `${amp * 1.0}px`);
+        span.style.setProperty('--zx4',   `${-amp * 0.8}px`);
+        span.style.setProperty('--zx5',   `${amp * 0.5}px`);
+        span.style.setProperty('--zx6',   `${-amp * 0.3}px`);
+        span.style.setProperty('--zxEnd', `${(Math.random()-0.5)*60}px`);
+        span.style.setProperty('--rz1',   `${rot * 0.5}deg`);
+        span.style.setProperty('--rz2',   `${-rot}deg`);
+        span.style.setProperty('--rz3',   `${rot * 1.2}deg`);
+        span.style.setProperty('--rz4',   `${-rot * 0.8}deg`);
+        span.style.setProperty('--rz5',   `${rot * 0.4}deg`);
+        span.style.setProperty('--rz6',   `${-rot * 0.2}deg`);
+        span.style.setProperty('--rzEnd', `${(Math.random()-0.5)*40}deg`);
+        span.style.setProperty('--zigzag-dur', `${zigzagDuration}ms`);
 
-          span.classList.add('phase-zigzag');
-        });
+        span.classList.add('phase-zigzag');
       }, zigzagStartDelay);
 
-      // --- 段階3: ジグザグの終盤に星パーティクルを爆発させる ---
+      // --- 段階3: ジグザグの終盤にテキスト中心から星パーティクルを爆発 ---
       const scatterDelay = zigzagStartDelay + zigzagDuration * 0.72;
 
       setTimeout(() => {
-        const spans = item.querySelectorAll('.char-span');
-        spans.forEach((span, i) => {
-          const rect = span.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
+        const span = item.querySelector('.char-span');
+        const rect = span.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
 
-          const particleCount = 3 + Math.floor(Math.random() * 4);
-          for (let p = 0; p < particleCount; p++) {
-            const star = document.createElement('div');
-            star.classList.add('star-particle');
-            star.textContent = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
+        const particleCount = 18 + Math.floor(Math.random() * 10);
+        for (let p = 0; p < particleCount; p++) {
+          const star = document.createElement('div');
+          star.classList.add('star-particle');
+          star.textContent = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
 
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 60 + Math.random() * 250;
-            const sx = Math.cos(angle) * dist;
-            const sy = Math.sin(angle) * dist - Math.random() * 180;
-            const sr = (Math.random() - 0.5) * 540;
-            const dur = (0.8 + Math.random() * 2.5).toFixed(2);
-            const pDelay = i * 30 + Math.random() * 300;
-            const fontSize = 8 + Math.random() * 12;
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 80 + Math.random() * 280;
+          const sx = Math.cos(angle) * dist;
+          const sy = Math.sin(angle) * dist - Math.random() * 200;
+          const sr = (Math.random() - 0.5) * 540;
+          const dur = (1.0 + Math.random() * 2.5).toFixed(2);
+          const pDelay = Math.random() * 400;
+          const fontSize = 10 + Math.random() * 14;
 
-            star.style.cssText = `
-              left:${cx}px;top:${cy}px;
-              font-size:${fontSize}px;
-              --sx:${sx}px;--sy:${sy}px;--sr:${sr}deg;
-              --dur:${dur}s;
-              animation-delay:${pDelay}ms;
-              opacity:0;
-            `;
-            document.body.appendChild(star);
-            setTimeout(() => star.remove(), pDelay + parseFloat(dur) * 1000 + 300);
-          }
-        });
+          star.style.cssText = `
+            left:${cx}px;top:${cy}px;
+            font-size:${fontSize}px;
+            --sx:${sx}px;--sy:${sy}px;--sr:${sr}deg;
+            --dur:${dur}s;
+            animation-delay:${pDelay}ms;
+            opacity:0;
+          `;
+          document.body.appendChild(star);
+          setTimeout(() => star.remove(), pDelay + parseFloat(dur) * 1000 + 300);
+        }
       }, scatterDelay);
 
       // --- 完了: 結果画面へ遷移 ---
