@@ -88,6 +88,25 @@
     }
     .screen { z-index: 10; position: relative; width: 100%; max-width: 28rem; }
 
+
+    /* 6. 宇宙に浮かぶゴミテキスト */
+    .cosmic-text {
+      position: absolute;
+      color: rgba(180, 200, 255, 0.75);
+      font-weight: bold;
+      white-space: nowrap;
+      pointer-events: none;
+      animation: cosmicFloat linear infinite;
+      text-shadow: 0 0 8px rgba(100, 150, 255, 0.6);
+    }
+    @keyframes cosmicFloat {
+      0%   { transform: translateX(0px) translateY(0px) rotate(var(--init-rot)); opacity: 0; }
+      6%   { opacity: 1; }
+      50%  { transform: translateX(var(--drift-x)) translateY(var(--drift-y)) rotate(var(--mid-rot)); opacity: 0.8; }
+      94%  { opacity: 0.7; }
+      100% { transform: translateX(var(--end-x)) translateY(var(--end-y)) rotate(var(--end-rot)); opacity: 0; }
+    }
+
     /* 5. 宇宙デブリ（ゴミ）レイヤー */
     #debris-layer {
       position: fixed;
@@ -186,9 +205,16 @@
       ホームに戻る
     </button>
 
-    <button onclick="alert('準備中')" class="mt-8 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
+    <button onclick="navTo('screen-cosmic')" class="mt-8 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
       宇宙に捨てられたゴミをみる
 </button>
+  </div>
+
+
+  <div id="screen-cosmic" class="fixed inset-0 hidden z-40 overflow-hidden">
+    <div id="cosmic-items-layer" class="absolute inset-0"></div>
+    <button onclick="navTo('screen-result')" class="absolute top-6 right-6 z-50 text-white/60 hover:text-white text-xs border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm transition">← 戻る</button>
+    <div class="absolute bottom-8 left-0 right-0 text-center text-white/30 text-xs pointer-events-none">みんなの宇宙ゴミ</div>
   </div>
 
   <script>
@@ -215,13 +241,48 @@
       }
     }
 
+
+    const COSMIC_TRASH = ['電車が遅れて予定が崩れた','美咲に既読スルーされてモヤモヤする','やる気が出ないのに仕事が多い','隆が人の意見を否定する','自分ばかり損している気がする','翔太が約束の時間に遅れてきた','人の機嫌に振り回される','亮太が報告を怠る','周りがうまくいっているように見える','健太に頼んだ仕事を忘れられていた','やることが多くて整理できない','美穂が必要な情報を共有しない','話を最後まで聞いてもらえない','圭が連絡すると言ってしない','予定通りに進まない','沙羅が予定を直前で変更する','気を使いすぎて本音が言えない','由美が会議で私の意見を無視した','自分のペースで進められない','悠斗が大事な話をはぐらかした','無駄な気遣いをしてしまう','麻衣に貸したお金をまだ返してもらえない','思考がネガティブに偏る','真央がすぐに機嫌を悪くする','やる気の波が激しい','美優が自慢話ばかりしてくる','努力が報われない気がする','健吾が締切を守らない','時間が足りない','和美が自分の都合ばかり優先する','断れなくて引き受けてしまう','亮から急に冷たい態度を取られた','小さなことで落ち込む','麻美が言ったことを覚えていない','気分の浮き沈みが激しい','人の一言を引きずる','美紀が人の話を聞かない','余裕がなくてイライラする','考えすぎて動けなくなる','慎一が責任を押し付けてくる','人の目が気になる','由香が連絡を無視する','何をしても満足できない','翔子が他人の手柄を取る','やる前から諦めてしまう','優が大事な話を軽く流す','モチベーションが上がらない','直人が自分の意見ばかり押し通す','優先順位がわからない','健が自分のミスを認めない','思い通りにいかないことが多い','直子がミスを隠そうとする','やりたいことが見つからない','人に頼るのが苦手','千夏が急に不機嫌になる','期待に応えられなかった','健人が無責任な発言をする','評価されていない気がする','隆史が仕事の進捗を共有しない','時間を無駄にしてしまった','真理子が陰口を言っているのを聞いた','気を使いすぎて疲れる','翔太が同じことを何度も聞く','やるべきことが多すぎる','直樹がまた同じミスをしてフォローさせられた','評価が曖昧で納得できない','奈々がドタキャンしてきた','人付き合いが面倒に感じる','亮介が約束を軽く扱う','寝ても疲れが取れない','圭介が態度をコロコロ変える','一人の時間が足りない','大地が指示を無視する','既読無視されてモヤモヤする','断る勇気が持てない','彩が私の話を途中で遮った','やる気が続かない','美月が相談に乗ると言って忙しいふりをする','誰にも理解されていない気がする','沙希が人の話を最後まで聞かない','自分の時間が削られている','健二が遅刻しても反省していない','人間関係に気を使いすぎる','会話がかみ合わず疲れた','直樹が言い訳ばかりする','由佳がこちらの話を理解しない','やることを後回しにしてしまう','上司の一言が刺さった','SNSを見ると気分が下がる','麻里が曖昧な指示を出す','思っていることを伝えられない','拓也が期限を守らない','毎日同じことの繰り返し','人と比べてしまう癖がある','恵美が返信を放置する','頑張る理由が見えない','部屋が散らかっている','やる気が空回りする','隆が機嫌悪くて八つ当たりしてきた','徹から返信がなくてずっと気になる','将来が不安になる','疲れているのに休めない','陽介が上から目線で話してくる','会議が長くて無駄に感じる','大樹が準備不足のまま来る','他人と比べて落ち込む','返信を考えるのが面倒','恵がLINEで素っ気ない返事しかしない','人に期待しすぎてしまう','直美が約束を守らない','無力感','美香が話をすり替える','予定が詰まりすぎている','拓海が話を聞いているふりをする','亮が相談を真剣に聞かない','意味のない作業が多い','どうでもいいことにイライラする','由紀が人のせいにする','気分が重い','久美が話を盛ってくる','沙織が陰で私のことを話している気がする','圭太が確認を怠る','美奈が時間にルーズすぎる','和也が説明をちゃんとしない'];
+
+    function createCosmicTrash() {
+      const layer = document.getElementById('cosmic-items-layer');
+      layer.innerHTML = '';
+      const shuffled = [...COSMIC_TRASH].sort(() => Math.random() - 0.5);
+      const count = Math.min(40, shuffled.length);
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.classList.add('cosmic-text');
+        el.textContent = shuffled[i];
+        const fontSize = 9 + Math.random() * 10;
+        const left = Math.random() * 90;
+        const top = Math.random() * 90;
+        const duration = 20 + Math.random() * 30;
+        const delay = -Math.random() * 30;
+        const initRot = (Math.random() - 0.5) * 30;
+        const midRot = initRot + (Math.random() - 0.5) * 20;
+        const endRot = midRot + (Math.random() - 0.5) * 20;
+        const driftX = (Math.random() - 0.5) * 120;
+        const driftY = (Math.random() - 0.5) * 80;
+        const endX = driftX + (Math.random() - 0.5) * 80;
+        const endY = driftY + (Math.random() - 0.5) * 80;
+        const alpha = 0.4 + Math.random() * 0.5;
+        el.style.cssText = `font-size:${fontSize}px;left:${left}%;top:${top}%;animation-duration:${duration}s;animation-delay:${delay}s;--init-rot:${initRot}deg;--mid-rot:${midRot}deg;--end-rot:${endRot}deg;--drift-x:${driftX}px;--drift-y:${driftY}px;--end-x:${endX}px;--end-y:${endY}px;color:rgba(180,200,255,${alpha});`;
+        layer.appendChild(el);
+      }
+    }
+
     function navTo(screenId) {
       document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
       document.getElementById(screenId).classList.remove('hidden');
 
       const stars = document.getElementById('star-layer');
       const debris = document.getElementById('debris-layer');
-      if (screenId === 'screen-ritual' || screenId === 'screen-result') {
+      if (screenId === 'screen-cosmic') {
+        document.body.className = "bg-space min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
+        stars.classList.add('stars-active');
+        debris.classList.remove('debris-active');
+        createCosmicTrash();
+      } else if (screenId === 'screen-ritual' || screenId === 'screen-result') {
         document.body.className = "bg-space min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
         stars.classList.add('stars-active');
         if (screenId === 'screen-ritual') {
