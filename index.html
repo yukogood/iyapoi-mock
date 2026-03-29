@@ -244,7 +244,7 @@
   <div id="debris-layer"></div>
   <div id="ocean-debris-layer"></div>
     <!-- ランキング看板ボタン（宇宙/海モード時に右上表示） -->
-  <button id="ranking-sign-btn" onclick="openRankingModal()" class="fixed top-5 right-5 z-50 hidden px-4 py-2 rounded-xl text-xs">
+  <button id="ranking-sign-btn" onclick="openRankingModal()" class="fixed top-5 left-5 z-50 hidden px-4 py-2 rounded-xl text-xs">
     🏆 みんなの気持ちランキング
   </button>
 
@@ -400,7 +400,8 @@
   <!-- 宇宙ゴミ一覧画面 -->
   <div id="screen-cosmic" class="fixed inset-0 hidden z-40 overflow-hidden">
     <div id="cosmic-items-layer" class="absolute inset-0"></div>
-    <button onclick="navTo('screen-result')" class="absolute top-6 right-6 z-50 text-white/60 hover:text-white text-xs border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm transition">← 戻る</button>
+    <button onclick="navTo('screen-result')" class="absolute top-6 right-36 z-50 text-white/60 hover:text-white text-xs border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm transition">← 結果に戻る</button>
+    <button onclick="resetApp()" class="absolute top-6 right-6 z-50 text-white/60 hover:text-white text-xs border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm transition">TOPに戻る</button>
     <div class="absolute bottom-8 left-0 right-0 text-center text-white/30 text-xs pointer-events-none">みんなの宇宙ゴミ</div>
     <!-- ゴミ拾いボタン -->
     <button onclick="openCleanupModal()" class="neon-btn absolute bottom-20 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-full font-bold text-base whitespace-nowrap">
