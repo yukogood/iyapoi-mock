@@ -255,7 +255,10 @@
     <button onclick="resetApp()" class="w-full bg-white text-blue-900 py-4 rounded-full font-bold shadow-lg hover:bg-blue-50 transition-all">
       ホームに戻る
     </button>
-    <button id="view-cosmic-btn" onclick="openLoginModal()" class="mt-8 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
+    <button id="view-everyone-btn" onclick="openEveryoneTrash()" class="mt-8 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
+      皆が捨てたゴミをみる
+    </button>
+    <button id="view-cosmic-btn" onclick="openLoginModal()" class="mt-2 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
       自分が今まで捨てたゴミをみる
     </button>
   </div>
@@ -476,17 +479,23 @@
         if (currentMode === 'ocean') {
           document.getElementById('result-title').innerHTML = 'あなたの嫌な事は、<br>海の底に沈んで消えてなくなりました';
           document.getElementById('result-subtitle').textContent = '「波に流されて、もう届かない場所へ。」';
+          document.getElementById('view-everyone-btn').style.display = '';
           document.getElementById('view-cosmic-btn').style.display = 'none';
         } else {
           document.getElementById('result-title').innerHTML = 'あなたの嫌な事は、<br>宇宙に捨てて消えてなくなりました';
           document.getElementById('result-subtitle').textContent = '「明日まで持ち越さなくて大丈夫。」';
+          document.getElementById('view-everyone-btn').style.display = '';
           document.getElementById('view-cosmic-btn').style.display = '';
         }
         navTo('screen-result');
       }, zigzagStartDelay + zigzagDuration + 800);
     }
 
-      function openLoginModal() {
+      function openEveryoneTrash() {
+      navTo('screen-cosmic');
+    }
+
+    function openLoginModal() {
       document.getElementById('modal-login').classList.remove('hidden');
     }
 
