@@ -188,12 +188,9 @@
     <div class="text-xs font-bold text-blue-400 tracking-widest mb-2 uppercase">TRASH</div>
     <h1 class="text-6xl font-black text-blue-500 mb-4 italic tracking-tighter">トラッシュ</h1>
     <p class="mb-10 text-black-400 text-sm leading-relaxed">心に溜まったモヤモヤは<br>どこか遠くへ放り投げましょう。</p>
-    <div class="flex flex-col gap-3">
-      <button onclick="startWithMode('space')" class="throw-btn w-full bg-indigo-900 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-indigo-800 transition-all flex items-center justify-center gap-2">
-        <span class="text-xl">🚀</span> 宇宙へ投げる
-      </button>
-      <button onclick="startWithMode('ocean')" class="throw-btn w-full bg-sky-500 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
-        <span class="text-xl">🌊</span> 海へ投げる
+        <div class="flex flex-col gap-3">
+      <button onclick="startApp()" class="throw-btn w-full bg-indigo-900 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-indigo-800 transition-all flex items-center justify-center gap-2">
+        <span class="text-xl">✨</span> はじめる
       </button>
     </div>
     <div class="flex justify-end mt-4">
@@ -235,11 +232,14 @@
     </div>
     <label class="block mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">捨てたい出来事を書く</label>
     <textarea id="trash-text" class="w-full border-2 border-gray-100 rounded-2xl p-5 mb-8 h-32 outline-none focus:border-blue-300 transition-all resize-none" placeholder="ここに自由に書いてください..."></textarea>
-    <button id="throw-btn-submit" onclick="startRitual()" class="w-full bg-gray-900 text-white py-5 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all">
-      <span id="throw-btn-icon" class="text-xl">🚀</span>
-      <span id="throw-btn-label">宇宙へポイ！！</span>
-    </button>
-  </div>
+    <div class="flex gap-3">
+      <button onclick="startRitual('space')" class="throw-btn flex-1 bg-indigo-900 text-white py-5 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-indigo-800">
+        <span class="text-xl">🚀</span> 宇宙へポイ
+      </button>
+      <button onclick="startRitual('ocean')" class="throw-btn flex-1 bg-sky-500 text-white py-5 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-sky-600">
+        <span class="text-xl">🌊</span> 海へポイ
+      </button>
+    </div>
 
   <!-- リチュアル画面 -->
   <div id="screen-ritual" class="fixed inset-0 flex flex-col items-center justify-center hidden z-50">
@@ -388,32 +388,14 @@
       el.classList.toggle('tag-selected');
     }
 
-    /* ===== モード選択 ===== */
-    function startWithMode(mode) {
-      currentMode = mode;
-      const badge = document.getElementById('input-mode-badge');
-      const icon  = document.getElementById('throw-btn-icon');
-      const label = document.getElementById('throw-btn-label');
-      const btn   = document.getElementById('throw-btn-submit');
-      if (mode === 'ocean') {
-        badge.textContent = '🌊 海へ投げる';
-        icon.textContent  = '🌊';
-        label.textContent = '海へポイ！！';
-        btn.className = btn.className.replace('bg-gray-900', 'bg-sky-600').replace('bg-sky-600', 'bg-sky-600');
-        btn.style.background = '#0284c7';
-      } else {
-        badge.textContent = '🚀 宇宙へ投げる';
-        icon.textContent  = '🚀';
-        label.textContent = '宇宙へポイ！！';
-        btn.style.background = '';
-        btn.className = btn.className.replace('bg-sky-600','bg-gray-900');
-        btn.style.background = '#111827';
-      }
+    /* ===== はじめる ===== */
+    function startApp() {
       navTo('screen-input');
     }
 
     /* ===== アニメーション ===== */
-    function startRitual() {
+    function startRitual(mode) {
+      currentMode = mode;
       const text = document.getElementById('trash-text').value;
       if (!text.trim()) return alert('内容を書いてくださいね。');
       const item = document.getElementById('trash-item');
