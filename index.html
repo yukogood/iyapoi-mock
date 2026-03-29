@@ -197,6 +197,39 @@
       background: rgba(0,0,0,0.85);
       backdrop-filter: blur(8px);
     }
+
+    /* ランキング看板ボタン */
+    @keyframes signGlow {
+      0%, 100% { box-shadow: 0 0 6px rgba(251,191,36,0.8), 0 0 14px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.5); }
+      50%       { box-shadow: 0 0 10px rgba(251,191,36,1),   0 0 22px rgba(251,191,36,0.7), 0 2px 8px rgba(0,0,0,0.5); }
+    }
+    #ranking-sign-btn {
+      background: linear-gradient(135deg, #1a1200 0%, #3d2a00 100%);
+      border: 2px solid #f59e0b;
+      color: #fde68a;
+      animation: signGlow 2.4s ease-in-out infinite;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.1s;
+    }
+    #ranking-sign-btn:active { transform: scale(0.96); }
+    /* ランキングモーダル */
+    #modal-ranking {
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+    }
+    .rank-bar-bg {
+      background: rgba(255,255,255,0.1);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .rank-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.8s ease;
+    }
 </style>
 </head>
 <body class="bg-pastel min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden">
@@ -210,7 +243,65 @@
   </div>
   <div id="debris-layer"></div>
   <div id="ocean-debris-layer"></div>
-  <!-- ホーム画面 -->
+    <!-- ランキング看板ボタン（宇宙/海モード時に右上表示） -->
+  <button id="ranking-sign-btn" onclick="openRankingModal()" class="fixed top-5 right-5 z-50 hidden px-4 py-2 rounded-xl text-xs">
+    🏆 みんなの気持ちランキング
+  </button>
+
+  <!-- ランキングモーダル -->
+  <div id="modal-ranking" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+    <div class="relative w-full max-w-sm rounded-3xl border border-yellow-500/30 p-6" style="background:rgba(10,8,2,0.95);box-shadow:0 0 40px rgba(251,191,36,0.2);">
+      <h3 class="text-yellow-300 font-black text-lg mb-1 text-center tracking-wide">🏆 みんなの気持ちランキング</h3>
+      <p class="text-yellow-200/40 text-xs text-center mb-6">今みんなが捨てたゴミの感情</p>
+      <div class="flex flex-col gap-3 mb-6">
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😰 不安</span><span class="text-yellow-300 font-bold">60%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-yellow-400 to-yellow-300" style="width:60%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😤 イライラ</span><span class="text-yellow-300 font-bold">48%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-orange-500 to-orange-400" style="width:48%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😞 落ち込む</span><span class="text-yellow-300 font-bold">38%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-blue-500 to-blue-400" style="width:38%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😩 疲れた</span><span class="text-yellow-300 font-bold">32%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-purple-500 to-purple-400" style="width:32%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😢 悲しい</span><span class="text-yellow-300 font-bold">25%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-sky-500 to-sky-400" style="width:25%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😶 モヤモヤ</span><span class="text-yellow-300 font-bold">19%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-gray-400 to-gray-300" style="width:19%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😡 むかつく</span><span class="text-yellow-300 font-bold">14%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-red-600 to-red-500" style="width:14%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😳 焦り</span><span class="text-yellow-300 font-bold">9%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-green-500 to-green-400" style="width:9%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😔 寂しい</span><span class="text-yellow-300 font-bold">6%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-indigo-400 to-indigo-300" style="width:6%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-white/80 font-bold">😖 悔しい</span><span class="text-yellow-300 font-bold">3%</span></div>
+          <div class="rank-bar-bg h-2"><div class="rank-bar-fill bg-gradient-to-r from-pink-500 to-pink-400" style="width:3%"></div></div>
+        </div>
+      </div>
+      <button onclick="closeRankingModal()" class="w-full text-xs text-yellow-200/40 hover:text-yellow-200/70 transition">
+        閉じる
+      </button>
+    </div>
+  </div>
+
+<!-- ホーム画面 -->
   <div id="screen-home" class="screen bg-white rounded-3xl shadow-2xl p-10 text-center">
     <div class="text-xs font-bold text-blue-400 tracking-widest mb-2 uppercase">TRASH</div>
     <h1 class="text-6xl font-black text-blue-500 mb-4 italic tracking-tighter">トラッシュ</h1>
@@ -453,6 +544,14 @@
       } else {
         document.body.className = "bg-pastel min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
       }
+
+      // ランキングボタンの表示制御
+      const rankingBtn = document.getElementById('ranking-sign-btn');
+      if (screenId === 'screen-ritual' || screenId === 'screen-result' || screenId === 'screen-cosmic') {
+        rankingBtn.classList.remove('hidden');
+      } else {
+        rankingBtn.classList.add('hidden');
+      }
     }
 
     function toggleTag(el) {
@@ -543,6 +642,14 @@
 
       function openEveryoneTrash() {
       navTo('screen-cosmic');
+    }
+
+    function openRankingModal() {
+      document.getElementById('modal-ranking').classList.remove('hidden');
+    }
+
+    function closeRankingModal() {
+      document.getElementById('modal-ranking').classList.add('hidden');
     }
 
     function openCleanupModal() {
