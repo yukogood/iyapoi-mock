@@ -170,7 +170,34 @@
       94%  { opacity: 0.7; }
       100% { transform: translateX(var(--end-x)) translateY(var(--end-y)) rotate(var(--end-rot)); opacity: 0; }
     }
-  </style>
+  
+    /* ゴミ拾いボタン - ピンクネオン */
+    @keyframes neonPulse {
+      0%, 100% {
+        text-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 0 24px #ff2d9b, 0 0 48px #ff2d9b, 0 0 80px #ff2d9b;
+        box-shadow: 0 0 8px #ff2d9b, 0 0 20px #ff2d9b, 0 0 40px #ff2d9b, inset 0 0 10px rgba(255,45,155,0.2);
+      }
+      50% {
+        text-shadow: 0 0 3px #fff, 0 0 8px #ff2d9b, 0 0 18px #ff2d9b, 0 0 32px #ff2d9b;
+        box-shadow: 0 0 4px #ff2d9b, 0 0 12px #ff2d9b, 0 0 24px #ff2d9b, inset 0 0 6px rgba(255,45,155,0.1);
+      }
+    }
+    .neon-btn {
+      color: #ff2d9b;
+      border: 2px solid #ff2d9b;
+      background: rgba(0,0,0,0.5);
+      animation: neonPulse 2s ease-in-out infinite;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .neon-btn:active { transform: scale(0.97); }
+    /* ゴミ拾いモーダル */
+    #modal-cleanup {
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+    }
+</style>
 </head>
 <body class="bg-pastel min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden">
 
@@ -284,7 +311,31 @@
     <div id="cosmic-items-layer" class="absolute inset-0"></div>
     <button onclick="navTo('screen-result')" class="absolute top-6 right-6 z-50 text-white/60 hover:text-white text-xs border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm transition">← 戻る</button>
     <div class="absolute bottom-8 left-0 right-0 text-center text-white/30 text-xs pointer-events-none">みんなの宇宙ゴミ</div>
+    <!-- ゴミ拾いボタン -->
+    <button onclick="openCleanupModal()" class="neon-btn absolute bottom-20 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-full font-bold text-base whitespace-nowrap">
+      ゴミ拾いをする
+    </button>
   </div>
+
+  <!-- ゴミ拾いモーダル -->
+  <div id="modal-cleanup" class="fixed inset-0 z-50 hidden flex items-center justify-center p-6">
+    <div class="relative w-full max-w-sm rounded-3xl border border-pink-500/40 p-8 text-center" style="background:rgba(10,0,20,0.92);box-shadow:0 0 40px rgba(255,45,155,0.3);">
+      <p class="text-white/90 text-sm leading-relaxed mb-8">
+        あなたは、みんなが見て見ぬふりをしたゴミたちに、そっと手を差しのべてくださる心やさしき勇者です。<br><br>
+        ゴミの最終決戦と処分は、責任をもって私が行います。<br>
+        ただし、そのためには"ゴミ袋"という名の装備が必要です。
+      </p>
+      <button onclick="alert('準備中です')" class="neon-btn w-full py-4 rounded-2xl font-bold text-sm mb-6">
+        🛍️ ゴミ袋を購入する（寄付をする）
+      </button>
+      <p class="text-white/50 text-xs leading-relaxed mb-6">
+        ありがとうございます。あなたのやさしさで、今日もゴミが成仏します。
+      </p>
+      <button onclick="closeCleanupModal()" class="text-xs text-white/30 hover:text-white/60 transition">
+        閉じる
+      </button>
+    </div>
+
   <script>
     /* ===== 状態管理 ===== */
     let currentMode = 'space';
@@ -492,6 +543,14 @@
 
       function openEveryoneTrash() {
       navTo('screen-cosmic');
+    }
+
+    function openCleanupModal() {
+      document.getElementById('modal-cleanup').classList.remove('hidden');
+    }
+
+    function closeCleanupModal() {
+      document.getElementById('modal-cleanup').classList.add('hidden');
     }
 
     function openLoginModal() {
