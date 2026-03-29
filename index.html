@@ -9,7 +9,7 @@
     /* 1. 文字を投げる 3段階アニメーション */
     @keyframes charAppear {
       0%   { opacity: 0; transform: scale(2) translateY(30px); filter: blur(4px) brightness(2); }
-      100% { opacity: 1; transform: scale(1) translateY(0px);  filter: blur(0px) brightness(1.2); }
+      100% { opacity: 1; transform: scale(1) translateYh(0px);  filter: blur(0px) brightness(1.2); }
     }
     @keyframes charZigzag {
       0%   { transform: translateX(0px) translateY(0px) scale(1) rotate(0deg); opacity: 1; filter: brightness(1.2); }
@@ -424,7 +424,7 @@
 
       setTimeout(() => {
         const span = item.querySelector('.char-span');
-        const amp  = 40 + Math.random() * 40;
+        const amp = 160 + Math.random() * 120;;
         const rot  = 6  + Math.random() * 8;
         span.style.setProperty('--zx1', `${amp * 0.4}px`);
         span.style.setProperty('--zx2', `${-amp * 0.7}px`);
