@@ -3,37 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>イヤポイ | 宇宙へポイ</title>
+  <title>イヤポイ | ポイ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* 1. 文字を宇宙へ放り投げる 3段階アニメーション */
-
-    /* 段階1: 中央に大きく出現 */
+    /* 1. 文字を投げる 3段階アニメーション */
     @keyframes charAppear {
       0%   { opacity: 0; transform: scale(2) translateY(30px); filter: blur(4px) brightness(2); }
       100% { opacity: 1; transform: scale(1) translateY(0px);  filter: blur(0px) brightness(1.2); }
     }
-
-    /* 段階2: 左右ジグザグしながら上へ縮小 */
     @keyframes charZigzag {
-      0%   { transform: translateX(0px)           translateY(0px)    scale(1)    rotate(0deg);   opacity: 1;   filter: brightness(1.2); }
-      15%  { transform: translateX(var(--zx1))    translateY(-15%)   scale(0.95) rotate(var(--rz1)); opacity: 1; }
-      30%  { transform: translateX(var(--zx2))    translateY(-32%)   scale(0.88) rotate(var(--rz2)); opacity: 0.95; }
-      45%  { transform: translateX(var(--zx3))    translateY(-52%)   scale(0.78) rotate(var(--rz3)); opacity: 0.88; }
-      60%  { transform: translateX(var(--zx4))    translateY(-68%)   scale(0.65) rotate(var(--rz4)); opacity: 0.75; filter: brightness(1.8); }
-      75%  { transform: translateX(var(--zx5))    translateY(-82%)   scale(0.45) rotate(var(--rz5)); opacity: 0.55; filter: brightness(2.5) blur(1px); }
-      88%  { transform: translateX(var(--zx6))    translateY(-93%)   scale(0.22) rotate(var(--rz6)); opacity: 0.3;  filter: brightness(4) blur(3px); }
-      100% { transform: translateX(var(--zxEnd))  translateY(-110%)  scale(0)    rotate(var(--rzEnd)); opacity: 0; filter: brightness(6) blur(8px); }
+      0%   { transform: translateX(0px) translateY(0px) scale(1) rotate(0deg); opacity: 1; filter: brightness(1.2); }
+      15%  { transform: translateX(var(--zx1)) translateY(-15%) scale(0.95) rotate(var(--rz1)); opacity: 1; }
+      30%  { transform: translateX(var(--zx2)) translateY(-32%) scale(0.88) rotate(var(--rz2)); opacity: 0.95; }
+      45%  { transform: translateX(var(--zx3)) translateY(-52%) scale(0.78) rotate(var(--rz3)); opacity: 0.88; }
+      60%  { transform: translateX(var(--zx4)) translateY(-68%) scale(0.65) rotate(var(--rz4)); opacity: 0.75; filter: brightness(1.8); }
+      75%  { transform: translateX(var(--zx5)) translateY(-82%) scale(0.45) rotate(var(--rz5)); opacity: 0.55; filter: brightness(2.5) blur(1px); }
+      88%  { transform: translateX(var(--zx6)) translateY(-93%) scale(0.22) rotate(var(--rz6)); opacity: 0.3;  filter: brightness(4) blur(3px); }
+      100% { transform: translateX(var(--zxEnd)) translateY(-110%) scale(0) rotate(var(--rzEnd)); opacity: 0; filter: brightness(6) blur(8px); }
     }
-
-    /* 段階3: 星として飛び散る */
     @keyframes starScatter {
-      0%   { transform: translate(0, 0) scale(1.2) rotate(0deg); opacity: 1;   filter: brightness(3); }
+      0%   { transform: translate(0, 0) scale(1.2) rotate(0deg); opacity: 1; filter: brightness(3); }
       30%  { opacity: 0.9; filter: brightness(4) blur(0px); }
       70%  { opacity: 0.5; filter: brightness(3) blur(2px); }
       100% { transform: translate(var(--sx), var(--sy)) scale(0) rotate(var(--sr)); opacity: 0; filter: brightness(6) blur(4px); }
     }
-
     .char-span {
       display: inline-block;
       position: relative;
@@ -42,7 +35,6 @@
     .char-span.phase-zigzag {
       animation: charZigzag var(--zigzag-dur) forwards cubic-bezier(0.4, 0, 0.7, 1);
     }
-
     .star-particle {
       position: fixed;
       pointer-events: none;
@@ -53,18 +45,14 @@
     /* 2. 背景設定 */
     body { transition: background 1s ease-in-out; }
     .bg-pastel { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-    .bg-space { 
-      background: radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 70%, #000000 100%) !important; 
-    }
+    .bg-space   { background: radial-gradient(circle at 50% 100%, #1e3a8a 0%, #020617 70%, #000000 100%) !important; }
+    .bg-ocean   { background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 30%, #075985 60%, #0c4a6e 100%) !important; }
 
     /* 3. 星空レイヤー */
     .stars {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0;
-      background-image: 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 1; pointer-events: none; opacity: 0;
+      background-image:
         radial-gradient(1px 1px at 10% 20%, #fff, transparent),
         radial-gradient(1.5px 1.5px at 50% 50%, #fff, transparent),
         radial-gradient(1.5px 1.5px at 70% 80%, #fff, transparent),
@@ -75,25 +63,105 @@
     }
     .stars-active { opacity: 1; }
 
+    /* 海レイヤー */
+    #ocean-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 1; pointer-events: none; opacity: 0;
+      transition: opacity 1.5s ease;
+      overflow: hidden;
+    }
+    #ocean-layer.ocean-active { opacity: 1; }
+
+    .ocean-shimmer {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 60%;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.04) 0px,
+        rgba(255,255,255,0) 8px,
+        rgba(255,255,255,0.03) 16px,
+        rgba(255,255,255,0) 24px
+      );
+      animation: shimmerMove 6s ease-in-out infinite;
+    }
+    @keyframes shimmerMove {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(12px); }
+    }
+
+    .wave {
+      position: absolute;
+      bottom: 0; left: -10%;
+      width: 120%; height: 80px;
+      border-radius: 40%;
+      animation: waveAnim linear infinite;
+      opacity: 0.35;
+    }
+    .wave-1 { background: rgba(125,211,252,0.6); animation-duration: 7s; bottom: 0; }
+    .wave-2 { background: rgba(56,189,248,0.5); animation-duration: 11s; bottom: 10px; animation-delay: -3s; }
+    .wave-3 { background: rgba(14,165,233,0.4); animation-duration: 15s; bottom: 18px; animation-delay: -6s; }
+    @keyframes waveAnim {
+      0%   { transform: translateX(0) rotate(0deg); }
+      50%  { transform: translateX(4%) rotate(1deg); }
+      100% { transform: translateX(0) rotate(0deg); }
+    }
+
     /* 4. UIパーツ設定 */
     .hidden { display: none !important; }
-    .tag-selected {
-      background-color: #3b82f6 !important;
-      color: white !important;
-      border-color: #3b82f6 !important;
-    }
+    .tag-selected { background-color: #3b82f6 !important; color: white !important; border-color: #3b82f6 !important; }
     .screen { z-index: 10; position: relative; width: 100%; max-width: 28rem; }
+    .throw-btn { transition: all 0.2s; }
+    .throw-btn:active { transform: scale(0.95); }
 
+    /* 5. 宇宙デブリレイヤー */
+    #debris-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 2; pointer-events: none; opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+    #debris-layer.debris-active { opacity: 1; }
+    .debris {
+      position: absolute;
+      opacity: 0;
+      animation: floatDebris linear infinite;
+      filter: drop-shadow(0 0 4px rgba(150,180,255,0.4));
+    }
+    @keyframes floatDebris {
+      0%   { transform: translateX(0px) translateY(0px) rotate(0deg); opacity: 0; }
+      8%   { opacity: 0.85; }
+      85%  { opacity: 0.6; }
+      100% { transform: translateX(var(--drift)) translateY(-110vh) rotate(var(--rot-end)); opacity: 0; }
+    }
+
+    /* 海デブリレイヤー */
+    #ocean-debris-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 2; pointer-events: none; opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+    #ocean-debris-layer.debris-active { opacity: 1; }
+    .ocean-debris {
+      position: absolute;
+      opacity: 0;
+      animation: floatOceanDebris ease-in-out infinite;
+    }
+    @keyframes floatOceanDebris {
+      0%   { transform: translateX(0px) translateY(0px) rotate(0deg) scaleX(1); opacity: 0; }
+      8%   { opacity: 0.85; }
+      50%  { transform: translateX(var(--ox)) translateY(var(--oy)) rotate(var(--or)) scaleX(var(--osx)); }
+      85%  { opacity: 0.6; }
+      100% { transform: translateX(var(--ox2)) translateY(var(--oy2)) rotate(var(--or2)) scaleX(1); opacity: 0; }
+    }
 
     /* 6. 宇宙に浮かぶゴミテキスト */
     .cosmic-text {
       position: absolute;
-      color: rgba(180, 200, 255, 0.75);
+      color: rgba(180,200,255,0.75);
       font-weight: bold;
       white-space: nowrap;
       pointer-events: none;
       animation: cosmicFloat linear infinite;
-      text-shadow: 0 0 8px rgba(100, 150, 255, 0.6);
+      text-shadow: 0 0 8px rgba(100,150,255,0.6);
     }
     @keyframes cosmicFloat {
       0%   { transform: translateX(0px) translateY(0px) rotate(var(--init-rot)); opacity: 0; }
@@ -102,52 +170,32 @@
       94%  { opacity: 0.7; }
       100% { transform: translateX(var(--end-x)) translateY(var(--end-y)) rotate(var(--end-rot)); opacity: 0; }
     }
-
-    /* 5. 宇宙デブリ（ゴミ）レイヤー */
-    #debris-layer {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1.5s ease;
-    }
-    #debris-layer.debris-active { opacity: 1; }
-
-    .debris {
-      position: absolute;
-      opacity: 0;
-      animation: floatDebris linear infinite;
-      filter: drop-shadow(0 0 4px rgba(150,180,255,0.4));
-    }
-
-    @keyframes floatDebris {
-      0% {
-        transform: translateX(0px) translateY(0px) rotate(0deg);
-        opacity: 0;
-      }
-      8% { opacity: 0.85; }
-      85% { opacity: 0.6; }
-      100% {
-        transform: translateX(var(--drift)) translateY(-110vh) rotate(var(--rot-end));
-        opacity: 0;
-      }
-    }
   </style>
 </head>
 <body class="bg-pastel min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden">
 
   <div id="star-layer" class="stars"></div>
+  <div id="ocean-layer">
+    <div class="ocean-shimmer"></div>
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+  </div>
   <div id="debris-layer"></div>
-
+  <div id="ocean-debris-layer"></div>
+  <!-- ホーム画面 -->
   <div id="screen-home" class="screen bg-white rounded-3xl shadow-2xl p-10 text-center">
     <div class="text-xs font-bold text-blue-400 tracking-widest mb-2 uppercase">TRASH</div>
     <h1 class="text-6xl font-black text-blue-500 mb-4 italic tracking-tighter">トラッシュ</h1>
-    <p class="mb-10 text-black-400 text-sm leading-relaxed">心に溜まったモヤモヤは<br>宇宙の果てへ放り投げましょう。</p>
-    <button onclick="navTo('screen-input')" class="w-full bg-blue-500 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-blue-600 transition-all active:scale-95">
-      宇宙へ投げる
-    </button>
-
+    <p class="mb-10 text-black-400 text-sm leading-relaxed">心に溜まったモヤモヤは<br>どこか遠くへ放り投げましょう。</p>
+    <div class="flex flex-col gap-3">
+      <button onclick="startWithMode('space')" class="throw-btn w-full bg-indigo-900 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-indigo-800 transition-all flex items-center justify-center gap-2">
+        <span class="text-xl">🚀</span> 宇宙へ投げる
+      </button>
+      <button onclick="startWithMode('ocean')" class="throw-btn w-full bg-sky-500 text-white py-5 rounded-2xl font-bold shadow-xl hover:bg-sky-600 transition-all flex items-center justify-center gap-2">
+        <span class="text-xl">🌊</span> 海へ投げる
+      </button>
+    </div>
     <div class="flex justify-end mt-4">
       <button onclick="alert('準備中です')" class="text-xs text-gray-400 hover:text-blue-400 transition-colors underline underline-offset-4 decoration-dotted">
         ログインして利用する →
@@ -155,9 +203,10 @@
     </div>
   </div>
 
+  <!-- 入力画面 -->
   <div id="screen-input" class="screen bg-white rounded-3xl shadow-2xl p-8 hidden max-h-[90vh] overflow-y-auto">
+    <div id="input-mode-badge" class="text-center mb-4 text-xs font-bold tracking-widest text-gray-400 uppercase"></div>
     <h2 class="text-xl font-bold mb-6 text-center text-gray-800">今の気持ちを吐き出す</h2>
-    
     <label class="block mb-3 text-xs font-bold text-gray-400 text-center uppercase tracking-wider">感情を選んでください</label>
     <div class="flex flex-wrap gap-2 mb-8 justify-center">
       <span onclick="toggleTag(this)" class="px-3 py-2 border rounded-full text-xs cursor-pointer hover:bg-gray-100 transition">イライラ</span>
@@ -184,44 +233,48 @@
       <span onclick="toggleTag(this)" class="px-3 py-2 border rounded-full text-xs cursor-pointer hover:bg-gray-100 transition">混乱</span>
       <span onclick="toggleTag(this)" class="px-3 py-2 border rounded-full text-xs cursor-pointer hover:bg-gray-100 transition">無力感</span>
     </div>
-
     <label class="block mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">捨てたい出来事を書く</label>
     <textarea id="trash-text" class="w-full border-2 border-gray-100 rounded-2xl p-5 mb-8 h-32 outline-none focus:border-blue-300 transition-all resize-none" placeholder="ここに自由に書いてください..."></textarea>
-
-    <button onclick="startRitual()" class="w-full bg-gray-900 text-white py-5 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all">
-      <span class="text-xl">🚀</span>
-      <span>宇宙へポイ！！</span>
+    <button id="throw-btn-submit" onclick="startRitual()" class="w-full bg-gray-900 text-white py-5 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all">
+      <span id="throw-btn-icon" class="text-xl">🚀</span>
+      <span id="throw-btn-label">宇宙へポイ！！</span>
     </button>
   </div>
 
+  <!-- リチュアル画面 -->
   <div id="screen-ritual" class="fixed inset-0 flex flex-col items-center justify-center hidden z-50">
     <div id="trash-item" class="text-white font-black text-4xl md:text-5xl max-w-lg text-center break-words leading-tight p-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.9)]">
     </div>
   </div>
 
+  <!-- 結果画面 -->
   <div id="screen-result" class="screen bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 text-center hidden">
-    <h2 class="text-2xl font-bold mb-4 text-white">あなたの嫌な事は、<br>宇宙に捨てて消えてなくなりました</h2>
-    <p class="text-blue-100/70 mb-10 italic text-sm leading-relaxed">「明日まで持ち越さなくて大丈夫。」</p>
-    
+    <h2 id="result-title" class="text-2xl font-bold mb-4 text-white"></h2>
+    <p id="result-subtitle" class="text-blue-100/70 mb-10 italic text-sm leading-relaxed"></p>
     <button onclick="resetApp()" class="w-full bg-white text-blue-900 py-4 rounded-full font-bold shadow-lg hover:bg-blue-50 transition-all">
       ホームに戻る
     </button>
-
-    <button onclick="navTo('screen-cosmic')" class="mt-8 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
+    <button id="view-cosmic-btn" onclick="navTo('screen-cosmic')" class="mt-8 block w-full text-gray-400 text-xs transition decoration-dotted underline underline-offset-4">
       宇宙に捨てられたゴミをみる
-</button>
+    </button>
   </div>
 
-
+  <!-- 宇宙ゴミ一覧画面 -->
   <div id="screen-cosmic" class="fixed inset-0 hidden z-40 overflow-hidden">
     <div id="cosmic-items-layer" class="absolute inset-0"></div>
     <button onclick="navTo('screen-result')" class="absolute top-6 right-6 z-50 text-white/60 hover:text-white text-xs border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm transition">← 戻る</button>
     <div class="absolute bottom-8 left-0 right-0 text-center text-white/30 text-xs pointer-events-none">みんなの宇宙ゴミ</div>
   </div>
-
   <script>
+    /* ===== 状態管理 ===== */
+    let currentMode = 'space';
+
+    /* ===== デブリ設定 ===== */
     const DEBRIS_EMOJIS = ['🪨','⚙️','🔩','💿','📡','🛸','💥','🌕','☄️','🗑️','📦','💠','🪤'];
+    const OCEAN_DEBRIS_EMOJIS = ['🐠','🐟','🐙','🦑','🦀','🐚','🐡','🦈','🐬','🌊','🪼','🦞','🐋','🐳','🦭'];
     const DEBRIS_COUNT = 18;
+    const STAR_EMOJIS = ['⭐','✨','💫','🌟','⚡','🌠','·','°','★','☆'];
+    const SPLASH_EMOJIS = ['💧','🌊','💦','🫧','✨'];
 
     function createDebris() {
       const layer = document.getElementById('debris-layer');
@@ -229,8 +282,7 @@
       for (let i = 0; i < DEBRIS_COUNT; i++) {
         const el = document.createElement('div');
         el.classList.add('debris');
-        const emoji = DEBRIS_EMOJIS[Math.floor(Math.random() * DEBRIS_EMOJIS.length)];
-        el.textContent = emoji;
+        el.textContent = DEBRIS_EMOJIS[Math.floor(Math.random() * DEBRIS_EMOJIS.length)];
         const size = 14 + Math.random() * 24;
         const left = Math.random() * 95;
         const bottom = -8 - Math.random() * 15;
@@ -243,7 +295,31 @@
       }
     }
 
+    function createOceanDebris() {
+      const layer = document.getElementById('ocean-debris-layer');
+      layer.innerHTML = '';
+      for (let i = 0; i < DEBRIS_COUNT; i++) {
+        const el = document.createElement('div');
+        el.classList.add('ocean-debris');
+        el.textContent = OCEAN_DEBRIS_EMOJIS[Math.floor(Math.random() * OCEAN_DEBRIS_EMOJIS.length)];
+        const size = 16 + Math.random() * 20;
+        const left = Math.random() * 92;
+        const top  = 10 + Math.random() * 80;
+        const dur  = 12 + Math.random() * 18;
+        const delay = -Math.random() * 20;
+        const ox  = (Math.random() - 0.5) * 180;
+        const oy  = (Math.random() - 0.5) * 60;
+        const or  = (Math.random() - 0.5) * 20;
+        const osx = Math.random() > 0.5 ? -1 : 1;
+        const ox2 = ox + (Math.random() - 0.5) * 100;
+        const oy2 = oy + (Math.random() - 0.5) * 60;
+        const or2 = or + (Math.random() - 0.5) * 20;
+        el.style.cssText = `font-size:${size}px;left:${left}%;top:${top}%;animation-duration:${dur}s;animation-delay:${delay}s;--ox:${ox}px;--oy:${oy}px;--or:${or}deg;--osx:${osx};--ox2:${ox2}px;--oy2:${oy2}px;--or2:${or2}deg;`;
+        layer.appendChild(el);
+      }
+    }
 
+    /* ===== 宇宙ゴミ一覧 ===== */
     const COSMIC_TRASH = ['電車が遅れて予定が崩れた','美咲に既読スルーされてモヤモヤする','やる気が出ないのに仕事が多い','隆が人の意見を否定する','自分ばかり損している気がする','翔太が約束の時間に遅れてきた','人の機嫌に振り回される','亮太が報告を怠る','周りがうまくいっているように見える','健太に頼んだ仕事を忘れられていた','やることが多くて整理できない','美穂が必要な情報を共有しない','話を最後まで聞いてもらえない','圭が連絡すると言ってしない','予定通りに進まない','沙羅が予定を直前で変更する','気を使いすぎて本音が言えない','由美が会議で私の意見を無視した','自分のペースで進められない','悠斗が大事な話をはぐらかした','無駄な気遣いをしてしまう','麻衣に貸したお金をまだ返してもらえない','思考がネガティブに偏る','真央がすぐに機嫌を悪くする','やる気の波が激しい','美優が自慢話ばかりしてくる','努力が報われない気がする','健吾が締切を守らない','時間が足りない','和美が自分の都合ばかり優先する','断れなくて引き受けてしまう','亮から急に冷たい態度を取られた','小さなことで落ち込む','麻美が言ったことを覚えていない','気分の浮き沈みが激しい','人の一言を引きずる','美紀が人の話を聞かない','余裕がなくてイライラする','考えすぎて動けなくなる','慎一が責任を押し付けてくる','人の目が気になる','由香が連絡を無視する','何をしても満足できない','翔子が他人の手柄を取る','やる前から諦めてしまう','優が大事な話を軽く流す','モチベーションが上がらない','直人が自分の意見ばかり押し通す','優先順位がわからない','健が自分のミスを認めない','思い通りにいかないことが多い','直子がミスを隠そうとする','やりたいことが見つからない','人に頼るのが苦手','千夏が急に不機嫌になる','期待に応えられなかった','健人が無責任な発言をする','評価されていない気がする','隆史が仕事の進捗を共有しない','時間を無駄にしてしまった','真理子が陰口を言っているのを聞いた','気を使いすぎて疲れる','翔太が同じことを何度も聞く','やるべきことが多すぎる','直樹がまた同じミスをしてフォローさせられた','評価が曖昧で納得できない','奈々がドタキャンしてきた','人付き合いが面倒に感じる','亮介が約束を軽く扱う','寝ても疲れが取れない','圭介が態度をコロコロ変える','一人の時間が足りない','大地が指示を無視する','既読無視されてモヤモヤする','断る勇気が持てない','彩が私の話を途中で遮った','やる気が続かない','美月が相談に乗ると言って忙しいふりをする','誰にも理解されていない気がする','沙希が人の話を最後まで聞かない','自分の時間が削られている','健二が遅刻しても反省していない','人間関係に気を使いすぎる','会話がかみ合わず疲れた','直樹が言い訳ばかりする','由佳がこちらの話を理解しない','やることを後回しにしてしまう','上司の一言が刺さった','SNSを見ると気分が下がる','麻里が曖昧な指示を出す','思っていることを伝えられない','拓也が期限を守らない','毎日同じことの繰り返し','人と比べてしまう癖がある','恵美が返信を放置する','頑張る理由が見えない','部屋が散らかっている','やる気が空回りする','隆が機嫌悪くて八つ当たりしてきた','徹から返信がなくてずっと気になる','将来が不安になる','疲れているのに休めない','陽介が上から目線で話してくる','会議が長くて無駄に感じる','大樹が準備不足のまま来る','他人と比べて落ち込む','返信を考えるのが面倒','恵がLINEで素っ気ない返事しかしない','人に期待しすぎてしまう','直美が約束を守らない','無力感','美香が話をすり替える','予定が詰まりすぎている','拓海が話を聞いているふりをする','亮が相談を真剣に聞かない','意味のない作業が多い','どうでもいいことにイライラする','由紀が人のせいにする','気分が重い','久美が話を盛ってくる','沙織が陰で私のことを話している気がする','圭太が確認を怠る','美奈が時間にルーズすぎる','和也が説明をちゃんとしない'];
 
     function createCosmicTrash() {
@@ -257,44 +333,54 @@
         el.textContent = shuffled[i];
         const fontSize = 9 + Math.random() * 10;
         const left = Math.random() * 90;
-        const top = Math.random() * 90;
+        const top  = Math.random() * 90;
         const duration = 20 + Math.random() * 30;
         const delay = -Math.random() * 30;
         const initRot = (Math.random() - 0.5) * 30;
-        const midRot = initRot + (Math.random() - 0.5) * 20;
-        const endRot = midRot + (Math.random() - 0.5) * 20;
+        const midRot  = initRot + (Math.random() - 0.5) * 20;
+        const endRot  = midRot  + (Math.random() - 0.5) * 20;
         const driftX = (Math.random() - 0.5) * 120;
         const driftY = (Math.random() - 0.5) * 80;
-        const endX = driftX + (Math.random() - 0.5) * 80;
-        const endY = driftY + (Math.random() - 0.5) * 80;
-        const alpha = 0.4 + Math.random() * 0.5;
+        const endX   = driftX + (Math.random() - 0.5) * 80;
+        const endY   = driftY + (Math.random() - 0.5) * 80;
+        const alpha  = 0.4 + Math.random() * 0.5;
         el.style.cssText = `font-size:${fontSize}px;left:${left}%;top:${top}%;animation-duration:${duration}s;animation-delay:${delay}s;--init-rot:${initRot}deg;--mid-rot:${midRot}deg;--end-rot:${endRot}deg;--drift-x:${driftX}px;--drift-y:${driftY}px;--end-x:${endX}px;--end-y:${endY}px;color:rgba(180,200,255,${alpha});`;
         layer.appendChild(el);
       }
     }
-
+    /* ===== 画面遷移 ===== */
     function navTo(screenId) {
       document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
       document.getElementById(screenId).classList.remove('hidden');
 
-      const stars = document.getElementById('star-layer');
-      const debris = document.getElementById('debris-layer');
+      const stars       = document.getElementById('star-layer');
+      const ocean       = document.getElementById('ocean-layer');
+      const debris      = document.getElementById('debris-layer');
+      const oceanDebris = document.getElementById('ocean-debris-layer');
+
+      stars.classList.remove('stars-active');
+      ocean.classList.remove('ocean-active');
+      debris.classList.remove('debris-active');
+      oceanDebris.classList.remove('debris-active');
+
       if (screenId === 'screen-cosmic') {
         document.body.className = "bg-space min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
         stars.classList.add('stars-active');
-        debris.classList.remove('debris-active');
         createCosmicTrash();
       } else if (screenId === 'screen-ritual' || screenId === 'screen-result') {
-        document.body.className = "bg-space min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
-        stars.classList.add('stars-active');
-        if (screenId === 'screen-ritual') {
-          createDebris();
+        if (currentMode === 'ocean') {
+          document.body.className = "bg-ocean min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
+          ocean.classList.add('ocean-active');
+          if (screenId === 'screen-ritual') createOceanDebris();
+          oceanDebris.classList.add('debris-active');
+        } else {
+          document.body.className = "bg-space min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
+          stars.classList.add('stars-active');
+          if (screenId === 'screen-ritual') createDebris();
+          debris.classList.add('debris-active');
         }
-        debris.classList.add('debris-active');
       } else {
         document.body.className = "bg-pastel min-h-screen font-sans flex flex-col items-center justify-center p-4 overflow-hidden";
-        stars.classList.remove('stars-active');
-        debris.classList.remove('debris-active');
       }
     }
 
@@ -302,87 +388,101 @@
       el.classList.toggle('tag-selected');
     }
 
-    const STAR_EMOJIS = ['⭐','✨','💫','🌟','⚡','🌠','·','°','★','☆'];
+    /* ===== モード選択 ===== */
+    function startWithMode(mode) {
+      currentMode = mode;
+      const badge = document.getElementById('input-mode-badge');
+      const icon  = document.getElementById('throw-btn-icon');
+      const label = document.getElementById('throw-btn-label');
+      const btn   = document.getElementById('throw-btn-submit');
+      if (mode === 'ocean') {
+        badge.textContent = '🌊 海へ投げる';
+        icon.textContent  = '🌊';
+        label.textContent = '海へポイ！！';
+        btn.className = btn.className.replace('bg-gray-900', 'bg-sky-600').replace('bg-sky-600', 'bg-sky-600');
+        btn.style.background = '#0284c7';
+      } else {
+        badge.textContent = '🚀 宇宙へ投げる';
+        icon.textContent  = '🚀';
+        label.textContent = '宇宙へポイ！！';
+        btn.style.background = '';
+        btn.className = btn.className.replace('bg-sky-600','bg-gray-900');
+        btn.style.background = '#111827';
+      }
+      navTo('screen-input');
+    }
 
+    /* ===== アニメーション ===== */
     function startRitual() {
       const text = document.getElementById('trash-text').value;
       if (!text.trim()) return alert('内容を書いてくださいね。');
-
       const item = document.getElementById('trash-item');
-
-      // --- テキスト全体をそのまま表示（分解しない）---
       item.innerHTML = `<span class="char-span" style="--appear-delay:0ms">${text}</span>`;
-
       navTo('screen-ritual');
 
-      // --- 段階2: 600ms後にジグザグ上昇アニメーション開始 ---
       const zigzagStartDelay = 600;
-      const zigzagDuration = 5500;
+      const zigzagDuration   = 5500;
 
       setTimeout(() => {
         const span = item.querySelector('.char-span');
-        const amp = 40 + Math.random() * 40;
-        const rot = 6 + Math.random() * 8;
-
-        span.style.setProperty('--zx1',   `${amp * 0.4}px`);
-        span.style.setProperty('--zx2',   `${-amp * 0.7}px`);
-        span.style.setProperty('--zx3',   `${amp * 1.0}px`);
-        span.style.setProperty('--zx4',   `${-amp * 0.8}px`);
-        span.style.setProperty('--zx5',   `${amp * 0.5}px`);
-        span.style.setProperty('--zx6',   `${-amp * 0.3}px`);
+        const amp  = 40 + Math.random() * 40;
+        const rot  = 6  + Math.random() * 8;
+        span.style.setProperty('--zx1', `${amp * 0.4}px`);
+        span.style.setProperty('--zx2', `${-amp * 0.7}px`);
+        span.style.setProperty('--zx3', `${amp * 1.0}px`);
+        span.style.setProperty('--zx4', `${-amp * 0.8}px`);
+        span.style.setProperty('--zx5', `${amp * 0.5}px`);
+        span.style.setProperty('--zx6', `${-amp * 0.3}px`);
         span.style.setProperty('--zxEnd', `${(Math.random()-0.5)*60}px`);
-        span.style.setProperty('--rz1',   `${rot * 0.5}deg`);
-        span.style.setProperty('--rz2',   `${-rot}deg`);
-        span.style.setProperty('--rz3',   `${rot * 1.2}deg`);
-        span.style.setProperty('--rz4',   `${-rot * 0.8}deg`);
-        span.style.setProperty('--rz5',   `${rot * 0.4}deg`);
-        span.style.setProperty('--rz6',   `${-rot * 0.2}deg`);
+        span.style.setProperty('--rz1', `${rot * 0.5}deg`);
+        span.style.setProperty('--rz2', `${-rot}deg`);
+        span.style.setProperty('--rz3', `${rot * 1.2}deg`);
+        span.style.setProperty('--rz4', `${-rot * 0.8}deg`);
+        span.style.setProperty('--rz5', `${rot * 0.4}deg`);
+        span.style.setProperty('--rz6', `${-rot * 0.2}deg`);
         span.style.setProperty('--rzEnd', `${(Math.random()-0.5)*40}deg`);
         span.style.setProperty('--zigzag-dur', `${zigzagDuration}ms`);
-
         span.classList.add('phase-zigzag');
       }, zigzagStartDelay);
 
-      // --- 段階3: ジグザグの終盤にテキスト中心から星パーティクルを爆発 ---
       const scatterDelay = zigzagStartDelay + zigzagDuration * 0.72;
-
       setTimeout(() => {
         const span = item.querySelector('.char-span');
         const rect = span.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
+        const cx = rect.left + rect.width  / 2;
+        const cy = rect.top  + rect.height / 2;
+        const emojis = currentMode === 'ocean' ? ['💧','🌊','💦','🫧','✨','🐚'] : ['⭐','✨','💫','🌟','⚡','🌠','·','°','★','☆'];
         const particleCount = 18 + Math.floor(Math.random() * 10);
         for (let p = 0; p < particleCount; p++) {
-          const star = document.createElement('div');
+          const star  = document.createElement('div');
           star.classList.add('star-particle');
-          star.textContent = STAR_EMOJIS[Math.floor(Math.random() * STAR_EMOJIS.length)];
-
+          star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
           const angle = Math.random() * Math.PI * 2;
-          const dist = 80 + Math.random() * 280;
-          const sx = Math.cos(angle) * dist;
-          const sy = Math.sin(angle) * dist - Math.random() * 200;
-          const sr = (Math.random() - 0.5) * 540;
-          const dur = (1.0 + Math.random() * 2.5).toFixed(2);
+          const dist  = 80 + Math.random() * 280;
+          const sx    = Math.cos(angle) * dist;
+          const sy    = Math.sin(angle) * dist - Math.random() * 200;
+          const sr    = (Math.random() - 0.5) * 540;
+          const dur   = (1.0 + Math.random() * 2.5).toFixed(2);
           const pDelay = Math.random() * 400;
           const fontSize = 10 + Math.random() * 14;
-
-          star.style.cssText = `
-            left:${cx}px;top:${cy}px;
-            font-size:${fontSize}px;
-            --sx:${sx}px;--sy:${sy}px;--sr:${sr}deg;
-            --dur:${dur}s;
-            animation-delay:${pDelay}ms;
-            opacity:0;
-          `;
+          star.style.cssText = `left:${cx}px;top:${cy}px;font-size:${fontSize}px;--sx:${sx}px;--sy:${sy}px;--sr:${sr}deg;--dur:${dur}s;animation-delay:${pDelay}ms;opacity:0;`;
           document.body.appendChild(star);
           setTimeout(() => star.remove(), pDelay + parseFloat(dur) * 1000 + 300);
         }
       }, scatterDelay);
 
-      // --- 完了: 結果画面へ遷移 ---
       setTimeout(() => {
         item.innerHTML = '';
+        /* 結果画面のテキストをモードに応じて切替 */
+        if (currentMode === 'ocean') {
+          document.getElementById('result-title').innerHTML = 'あなたの嫌な事は、<br>海の底に沈んで消えてなくなりました';
+          document.getElementById('result-subtitle').textContent = '「波に流されて、もう届かない場所へ。」';
+          document.getElementById('view-cosmic-btn').style.display = 'none';
+        } else {
+          document.getElementById('result-title').innerHTML = 'あなたの嫌な事は、<br>宇宙に捨てて消えてなくなりました';
+          document.getElementById('result-subtitle').textContent = '「明日まで持ち越さなくて大丈夫。」';
+          document.getElementById('view-cosmic-btn').style.display = '';
+        }
         navTo('screen-result');
       }, zigzagStartDelay + zigzagDuration + 800);
     }
@@ -390,6 +490,7 @@
     function resetApp() {
       document.getElementById('trash-text').value = '';
       document.querySelectorAll('.tag-selected').forEach(el => el.classList.remove('tag-selected'));
+      currentMode = 'space';
       navTo('screen-home');
     }
   </script>
